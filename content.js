@@ -2,6 +2,7 @@
 
 // set video speed
 function setVideoSpeed(speed) {
+  console.log("Fast Forwarding");
   const videos = document.querySelectorAll('video');
   videos.forEach(video => {
     video.playbackRate = parseFloat(speed);
@@ -11,10 +12,10 @@ function setVideoSpeed(speed) {
 }
 
 function clickButtonIfFound() {
-  console.log("In button function.");
-  const buttonSelector = "button.ytp-ad-skip-button.ytp-button";
+  // console.log("In button function.");
+  const buttonSelector = "button[class^='ytp-ad-skip-button']";
   const buttonToClick = document.querySelector(buttonSelector);
-
+  //document.querySelector("button[class^='ytp-ad-skip-button']")
   if (buttonToClick) {
     console.log("Button found. Clicking...");
     buttonToClick.click();
@@ -25,44 +26,41 @@ function clickButtonIfFound() {
   }
 }
 
-// Check if the ad element exists and fast forward if it does
-function fastForwardIfElementExists() {
-  const adElement = document.querySelector("div.ad-showing");
+// Create a MutationObserver to watch for changes in the DOM
+const observer = new MutationObserver(mutationCallback);
 
-  if (adElement) {
-    console.log("Ad is active. Not playing video.");
-    setVideoSpeed(16);
+// Specify the target node and the type of mutations to observe
+const targetNode = document.body;
+const config = { attributes: true, subtree: true };
 
-    // Check for the skip button every 1 second for a total of 10 seconds
-    const totalSeconds = 10;
-    const stepMilliseconds = 1000;
+// Start observing the target node for configured mutations
+observer.observe(targetNode, config);
+const total_duration_seconds = 10;
+const wait_duration_seconds = 0.1;
 
-    for (let i = 0; i < totalSeconds && !clickButtonIfFound(); i++) {
-      setTimeout(() => {}, i * stepMilliseconds);
+function mutationCallback(mutationsList) {
+  for (const mutation of mutationsList) {
+    if (mutation.type === 'childList' || mutation.type === 'attributes') {
+      // Check for changes in the class attribute, which may indicate the start of an ad
+      // fastForwardIfElementExists();
+      const adElement = document.querySelector('div.ad-showing');
+      if (adElement) {
+        // Ad has started
+        muteVideos();
+        setVideoSpeed(16);
+        for (let i = 0; i < total_duration_seconds/wait_duration_seconds && !clickButtonIfFound(); i++) {
+          setTimeout(() => {}, wait_duration_seconds);
+        }
+      }
     }
-  } else {
-    console.log("The video is playing.");
-    setVideoSpeed(1);
   }
 }
 
-// Use MutationObserver to listen for changes in the DOM
-const observer = new MutationObserver(function (mutationsList) {
-  for (const mutation of mutationsList) {
-    if (mutation.type === 'childList' || mutation.type === 'attributes') {
-      console.log("Mutation detected. Checking for ad element...");
-      fastForwardIfElementExists();
-    }
-  }
-});
 
-// Execute the function when the content script is injected
-// fastForwardIfElementExists();
-
-// Listen for messages from the extension popup or background script
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (request.command === 'fastForward') {
-    // fastForwardIfElementExists();
-    setVideoSpeed(0.5);
-  }
-});
+function muteVideos() {
+  console.log("Muting videos");
+  const videos = document.querySelectorAll('video');
+  videos.forEach(video => {
+    video.muted = true;
+  });
+}
