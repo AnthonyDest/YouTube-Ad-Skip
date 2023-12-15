@@ -1,30 +1,27 @@
 {
-  "manifest_version": 2,
-  "name": "YouTube Speed Controller",
-  "version": "1.1",
-  "description": "Change YouTube video speed with one click.",
-  "permissions": ["activeTab", "storage"],
-  "browser_action": {
-    "default_icon": {
-      "16": "icon.png",
-      "48": "icon.png",
-      "128": "icon.png"
-    },
+  "manifest_version": 3,
+  "name": "YouTube Ad Listener",
+  "version": "1.0",
+  "description": "Listens for YouTube ad requests.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "webRequest"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/*"
+  ],
+  "action": {
+    "default_icon": "icon.png",
     "default_popup": "popup.html"
   },
-  "icons": {
-    "16": "icon.png",
-    "48": "icon.png",
-    "128": "icon.png"
+  "background": {
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["*://www.youtube.com/*"],
+      "matches": ["https://www.youtube.com/*"],
       "js": ["content.js"]
     }
-  ],
-  "background": {
-    "scripts": ["background.js"],
-    "persistent": false
-  }
+  ]
 }
