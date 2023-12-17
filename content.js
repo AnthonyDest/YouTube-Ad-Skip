@@ -5,42 +5,48 @@ function set_video_speed(speed) {
   videos.forEach(video => {
     video.playbackRate = parseFloat(speed);
   });
-  // Optional: Save the speed to local storage for persistence
-  localStorage.setItem('yt_speed', speed);
 }
 
-// Create a MutationObserver to watch for changes in the DOM
-const observer = new MutationObserver(mutation_callback);
-
-// Specify the target node and the type of mutations to observe
-const target_node = document.body;
-const config = { attributes: true, subtree: true };
-
-// Start observing the target node for configured mutations
-observer.observe(target_node, config);
-
-// check what was modified
-function mutation_callback(mutations_list) {
-  for (const mutation of mutations_list) {
-    if (mutation.type === 'childList' || mutation.type === 'attributes') {
-      // Check for changes in the class attribute, which may indicate the start of an ad
-      ad_element = document.querySelector('div.ad-showing');
-      const button_selector = "button[class^='ytp-ad-skip-button']";
-      button_to_click = document.querySelector(button_selector);
-      videos = document.querySelectorAll('video');
-
-      if (ad_element && videos[0].playbackRate !== 16) {
-        // Ad has started
-        mute_videos();
-        set_video_speed(16);
-      } else if (ad_element && button_to_click) {
-        console.log("Clicking button");
-        button_to_click.click();
+// async detect desired element
+function wait_for_element(selector) {
+  return new Promise(resolve => {
+      console.log(`Waiting for element ${selector}`);
+      if (document.querySelector(selector)) {
+        return resolve(document.querySelector(selector));
       }
-    }
-  }
+
+      const observer = new MutationObserver(mutations => {
+          if (document.querySelector(selector)) {
+              observer.disconnect();
+              resolve(document.querySelector(selector));
+          }
+      });
+
+      observer.observe(document.body, {
+          childList: true,
+          subtree: true
+      });
+  });
 }
 
+// Wait for the ad to show up
+wait_for_element('.ad-showing').then((elm) => {
+  console.log('Ad is ready');
+  // console.log(elm.textContent);
+  mute_videos();
+  set_video_speed(16);
+
+});
+
+// wait for the skip button to show up
+wait_for_element("button[class^='ytp-ad-skip-button']").then((elm) => {
+  console.log('Button is ready');
+  // console.log(elm.textContent);
+  elm.click();
+
+});
+
+// mute videos
 function mute_videos() {
   console.log("Muting videos");
   const videos = document.querySelectorAll('video');
