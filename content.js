@@ -1,7 +1,5 @@
-// content.js
-
 // set video speed
-function setVideoSpeed(speed) {
+function set_video_speed(speed) {
   console.log("Fast Forwarding");
   const videos = document.querySelectorAll('video');
   videos.forEach(video => {
@@ -11,53 +9,39 @@ function setVideoSpeed(speed) {
   localStorage.setItem('yt_speed', speed);
 }
 
-function clickButtonIfFound() {
-  // console.log("In button function.");
-  const buttonSelector = "button[class^='ytp-ad-skip-button']";
-  const buttonToClick = document.querySelector(buttonSelector);
-  //document.querySelector("button[class^='ytp-ad-skip-button']")
-  if (buttonToClick) {
-    console.log("Button found. Clicking...");
-    buttonToClick.click();
-    return true;
-  } else {
-    console.log("Button not found.");
-    return false;
-  }
-}
-
 // Create a MutationObserver to watch for changes in the DOM
-const observer = new MutationObserver(mutationCallback);
+const observer = new MutationObserver(mutation_callback);
 
 // Specify the target node and the type of mutations to observe
-const targetNode = document.body;
+const target_node = document.body;
 const config = { attributes: true, subtree: true };
 
 // Start observing the target node for configured mutations
-observer.observe(targetNode, config);
-const total_duration_seconds = 10;
-const wait_duration_seconds = 0.1;
+observer.observe(target_node, config);
 
-function mutationCallback(mutationsList) {
-  for (const mutation of mutationsList) {
+// check what was modified
+function mutation_callback(mutations_list) {
+  for (const mutation of mutations_list) {
     if (mutation.type === 'childList' || mutation.type === 'attributes') {
       // Check for changes in the class attribute, which may indicate the start of an ad
-      // fastForwardIfElementExists();
-      const adElement = document.querySelector('div.ad-showing');
-      if (adElement) {
+      ad_element = document.querySelector('div.ad-showing');
+      const button_selector = "button[class^='ytp-ad-skip-button']";
+      button_to_click = document.querySelector(button_selector);
+      videos = document.querySelectorAll('video');
+
+      if (ad_element && videos[0].playbackRate !== 16) {
         // Ad has started
-        muteVideos();
-        setVideoSpeed(16);
-        for (let i = 0; i < total_duration_seconds/wait_duration_seconds && !clickButtonIfFound(); i++) {
-          setTimeout(() => {}, wait_duration_seconds);
-        }
+        mute_videos();
+        set_video_speed(16);
+      } else if (ad_element && button_to_click) {
+        console.log("Clicking button");
+        button_to_click.click();
       }
     }
   }
 }
 
-
-function muteVideos() {
+function mute_videos() {
   console.log("Muting videos");
   const videos = document.querySelectorAll('video');
   videos.forEach(video => {
