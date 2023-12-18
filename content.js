@@ -29,22 +29,39 @@ function wait_for_element(selector) {
   });
 }
 
+console.log("Content script is running.");
+
 // Wait for the ad to show up
-wait_for_element('.ad-showing').then((elm) => {
+async function handle_ad() {
+  console.log("Waiting for ad");
+  const adElement = await wait_for_element('.ad-showing');
   console.log('Ad is ready');
-  // console.log(elm.textContent);
   mute_videos();
   set_video_speed(16);
+  wait_for_ad_end();
+}
 
-});
+// Wait for the ad to end and resets the ad watch
+async function wait_for_ad_end() {
+  const video = await wait_for_element("video")
+  if(video.playbackRate!=16){
+    handle_ad();
+  } // Call the function recursively
+}
 
-// wait for the skip button to show up
-wait_for_element("button[class^='ytp-ad-skip-button']").then((elm) => {
+// clicks the skip button if available
+async function handle_skip_button() {
+  console.log("Waiting for button");
+  const skipButton = await wait_for_element(".ytp-ad-text.ytp-ad-skip-button-text-centered.ytp-ad-skip-button-text");
   console.log('Button is ready');
-  // console.log(elm.textContent);
-  elm.click();
+  // console.log(skipButton.textContent);
+  skipButton.click();
+  handle_skip_button(); // Call the function recursively
+}
 
-});
+// start recursive functions
+handle_ad();
+handle_skip_button();
 
 // mute videos
 function mute_videos() {
