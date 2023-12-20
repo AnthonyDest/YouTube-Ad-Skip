@@ -40,20 +40,21 @@ function wait_for_element(selector) {
 
 // async detect video speed change
 function wait_for_speed_change() {
-  const videos = document.querySelectorAll('video');
-
   return new Promise(resolve => {
     const observer = new MutationObserver(mutationsList => {
-      mutationsList.forEach(mutation => {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'playbackrate') {
-          observer.disconnect();
-          resolve();
-        }
-      });
+      const videoElement = document.querySelector('video');
+
+      console.log("current speed: " + videoElement.playbackRate);
+      if (videoElement && videoElement.playbackRate !== 16) {
+        observer.disconnect();
+        resolve(videoElement);
+      }
     });
 
-    videos.forEach(video => {
-      observer.observe(video, { attributes: true, attributeFilter: ['playbackRate'] });
+    // const video = document.querySelectorAll('#movie_player');
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
     });
   });
 }
