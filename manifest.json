@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "YouTube Ad Skip",
   "version": "1.0",
-  "description": "Fast forwards through YouTube ads requests.",
+  "description": "Fast forwards through YouTube video ads.",
   "permissions": [
     "storage",
     "activeTab",
@@ -27,15 +27,20 @@
       "32": "images/icon32.png",
       "48": "images/icon48.png",
       "128": "images/icon128.png"
-    }
+    },
+    "default_popup": "popup.html"
   },
   "background": {
     "service_worker": "service-worker.js"
   },
   "content_scripts": [
     {
-      "matches": ["https://www.youtube.com/*"],
-      "js": ["content.js"]
+      "matches": [
+        "https://www.youtube.com/*"
+      ],
+      "js": [
+        "content.js"
+      ]
     }
   ]
 }

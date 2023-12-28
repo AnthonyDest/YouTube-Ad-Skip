@@ -1,6 +1,8 @@
 # YouTube Ad Skip
 
-This program will fast forward ads on YouTube.
+YouTube Ad Skip is a lightweight browser extension designed to enhance your YouTube viewing experience by automatically fast-forwarding through video ads. No more manual clicking or waiting—simply install the extension, and enjoy your favorite content seamlessly. 
+
+This project is for educational and experimental purposes only. Please see full [disclaimer below](##Disclaimer)
 
 ## Setup
 
@@ -17,10 +19,10 @@ This program will fast forward ads on YouTube.
 - Select "Download ZIP."
 - Extract the ZIP file to your preferred location.
 
-### 2. Load the Extension in Chrome:
+### 2. Allow Local Extensions in Chrome:
 
 - Open Google Chrome.
-- Type `chrome://extensions/` in the address bar and press Enter.
+- Type `chrome://extensions/` in the address bar and press **Enter** (Chrome prevents hyperlinking the extensions page).
 - Enable "Developer mode" using the toggle switch in the top-right corner.
 
 ### 3. Load the Extension:
@@ -30,7 +32,7 @@ This program will fast forward ads on YouTube.
 
 ### 4. Enjoy Ad Free Viewing:
 
-- No manual input required, YouTube ads will automatically be skipped
+- No manual input required, YouTube video ads will automatically be skipped
 
 ## Disclaimer
 
